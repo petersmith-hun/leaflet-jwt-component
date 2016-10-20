@@ -1,5 +1,6 @@
-package hu.psprog.leaflet.security.jwt.util;
+package hu.psprog.leaflet.security.jwt.impl;
 
+import hu.psprog.leaflet.security.jwt.JWTComponent;
 import hu.psprog.leaflet.security.jwt.exception.InvalidAuthorizationHeaderException;
 import hu.psprog.leaflet.security.jwt.exception.InvalidJWTTokenException;
 import hu.psprog.leaflet.security.jwt.model.JWTAuthenticationAnswerModel;
@@ -8,7 +9,10 @@ import hu.psprog.leaflet.security.jwt.model.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -19,9 +23,10 @@ import java.util.stream.Collectors;
 /**
  * JWT encoder/decoder utility.
  *
- * Application specific JWT secret key shall be provided in security.properties file.
+ * Application specific JWT secret and expiration shall be provided in external application configuration file.
  */
-public class JWTUtility {
+@Component
+public class JWTComponentImpl implements JWTComponent {
 
     private static final String JWT_ISSUED_AT = "iat";
     private static final String JWT_EXPIRES = "exp";
@@ -34,17 +39,11 @@ public class JWTUtility {
     private static final String AUTH_HEADER = "Authorization";
     private static final String AUTH_BEARER = "Bearer ";
 
-    private static final Integer EXPIRES_IN_HOUR = 4;
+    @Autowired
+    private String jwtSecret;
 
-    private static String secret;
-
-    private JWTUtility() {
-        // prevent instantiation
-    }
-
-    public static void setSecret(String secret) {
-        JWTUtility.secret = secret;
-    }
+    @Autowired
+    private Integer expirationInHours;
 
     /**
      * Generates token from {@link UserDetails} object.
@@ -52,10 +51,10 @@ public class JWTUtility {
      * @param userDetails {@link UserDetails} object to generate token based on
      * @return token wrapped in {@link JWTAuthenticationAnswerModel} object
      */
-    public static JWTAuthenticationAnswerModel generateToken(UserDetails userDetails) {
+    public JWTAuthenticationAnswerModel generateToken(UserDetails userDetails) {
 
         String roles = userDetails.getAuthorities().stream()
-                .map(e -> e.getAuthority())
+                .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
         Map<String, Object> claims = new HashMap<>();
@@ -66,7 +65,7 @@ public class JWTUtility {
 
         String token = Jwts.builder()
                 .setClaims(claims)
-                .signWith(SignatureAlgorithm.HS512, secret)
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
 
         return new JWTAuthenticationAnswerModel(token);
@@ -79,10 +78,10 @@ public class JWTUtility {
      * @return {@link JWTPayload} object on success with the contents of JWT payload section
      * @throws InvalidJWTTokenException
      */
-    public static JWTPayload decode(String token) throws InvalidJWTTokenException {
+    public JWTPayload decode(String token) throws InvalidJWTTokenException {
 
         try {
-            Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+            Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
 
             JWTPayload payload = new JWTPayload();
             payload.setUsername(claims.get(JWT_USERNAME, String.class));
@@ -105,7 +104,7 @@ public class JWTUtility {
      * @return on success, extracted token will be returned as string
      * @throws InvalidAuthorizationHeaderException
      */
-    public static String extractToken(HttpServletRequest request) throws InvalidAuthorizationHeaderException {
+    public String extractToken(HttpServletRequest request) throws InvalidAuthorizationHeaderException {
 
         String authHeader = request.getHeader(AUTH_HEADER);
 
@@ -127,7 +126,7 @@ public class JWTUtility {
      *
      * @return {@link Long} timestamp of current date in seconds
      */
-    private static Long generateIssuedAt() {
+    private Long generateIssuedAt() {
 
         Date currentDate = new Date();
         long timestamp = currentDate.getTime() / 1000;
@@ -140,10 +139,10 @@ public class JWTUtility {
      *
      * @return {@link Long} timestamp of expiration date in seconds
      */
-    private static Long generateExpiration() {
+    private Long generateExpiration() {
 
         long timestamp = generateIssuedAt();
-        timestamp += (60 * 60 * EXPIRES_IN_HOUR);
+        timestamp += (3600 * expirationInHours);
 
         return timestamp;
     }
