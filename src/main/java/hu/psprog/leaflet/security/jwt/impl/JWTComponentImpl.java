@@ -30,7 +30,6 @@ public class JWTComponentImpl implements JWTComponent {
 
     private static final String JWT_ISSUED_AT = "iat";
     private static final String JWT_EXPIRES = "exp";
-    private static final String AUTH_ERROR_HEADER = "Authorization header must be present.";
     private static final String AUTH_ERROR_SCHEMA = "Authorization schema must be 'Bearer'";
 
     private static final String JWT_USERNAME = "usr";
@@ -109,7 +108,7 @@ public class JWTComponentImpl implements JWTComponent {
         String authHeader = request.getHeader(AUTH_HEADER);
 
         if(authHeader == null) {
-            throw new InvalidAuthorizationHeaderException(AUTH_ERROR_HEADER);
+            return null;
         }
 
         if (!authHeader.startsWith(AUTH_BEARER)) {

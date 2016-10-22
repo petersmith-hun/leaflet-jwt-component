@@ -7,6 +7,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.codec.Base64;
 
 /**
  * Reads up initial configuration values for JWT component.
@@ -28,7 +29,7 @@ public class ComponentInitializer implements InitializingBean {
 
     @Bean
     public String jwtSecret() {
-        return jwtSecret;
+        return new String(Base64.encode(jwtSecret.getBytes()));
     }
 
     @Bean
