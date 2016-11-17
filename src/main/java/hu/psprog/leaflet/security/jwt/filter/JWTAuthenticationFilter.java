@@ -4,6 +4,8 @@ import hu.psprog.leaflet.security.jwt.auth.JWTAuthenticationToken;
 import hu.psprog.leaflet.security.jwt.impl.JWTComponentImpl;
 import hu.psprog.leaflet.security.jwt.model.JWTPayload;
 import hu.psprog.leaflet.security.jwt.model.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Authentication filter for JWT-based authentication.
@@ -36,6 +39,8 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
     private static final GrantedAuthority ANONYMOUS_ROLE = new SimpleGrantedAuthority(Role.ANONYMOUS.name());
     private static final String URL_ROOT = "/**";
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(JWTAuthenticationFilter.class);
+
     @Autowired
     private JWTComponentImpl jwtComponentImpl;
 
@@ -47,17 +52,18 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException, IOException, ServletException {
 
-        String token = jwtComponentImpl.extractToken(request);
-        Authentication authentication;
+        Authentication authentication = new AnonymousAuthenticationToken(ANONYMOUS_USERNAME,
+                ANONYMOUS_PASSWORD,
+                Arrays.asList(ANONYMOUS_ROLE));;
 
-        if (token == null) {
-            // authenticate anonymously for public endpoints
-            authentication = new AnonymousAuthenticationToken(ANONYMOUS_USERNAME,
-                    ANONYMOUS_PASSWORD,
-                    Arrays.asList(ANONYMOUS_ROLE));
-        } else {
-            JWTPayload jwtPayload = jwtComponentImpl.decode(token);
-            authentication = new JWTAuthenticationToken(jwtPayload);
+        try {
+            String token = jwtComponentImpl.extractToken(request);
+            if (Objects.nonNull(token)) {
+                JWTPayload jwtPayload = jwtComponentImpl.decode(token);
+                authentication = new JWTAuthenticationToken(jwtPayload);
+            }
+        } catch (Exception exc) {
+            LOGGER.warn("An error occurred while parsing token. Root cause is the following: ", exc);
         }
 
         return getAuthenticationManager().authenticate(authentication);
@@ -70,6 +76,8 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
         SecurityContextHolder.getContext().setAuthentication(authResult);
         chain.doFilter(request, response);
     }
+
+
 
     @Autowired
     @Override

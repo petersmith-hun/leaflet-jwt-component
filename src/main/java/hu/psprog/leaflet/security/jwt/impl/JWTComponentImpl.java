@@ -9,6 +9,8 @@ import hu.psprog.leaflet.security.jwt.model.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,9 +30,12 @@ import java.util.stream.Collectors;
 @Component
 public class JWTComponentImpl implements JWTComponent {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(JWTComponentImpl.class);
+
     private static final String JWT_ISSUED_AT = "iat";
     private static final String JWT_EXPIRES = "exp";
     private static final String AUTH_ERROR_SCHEMA = "Authorization schema must be 'Bearer'";
+    private static final String TOKEN_CAN_NOT_BE_DECODED = "Token can not be decoded because of the following reason: ";
 
     private static final String JWT_USERNAME = "usr";
     private static final String JWT_USER_ROLE = "rol";
@@ -91,6 +96,7 @@ public class JWTComponentImpl implements JWTComponent {
             return payload;
 
         } catch(Exception exc) {
+            LOGGER.warn(TOKEN_CAN_NOT_BE_DECODED, exc);
             throw new InvalidJWTTokenException(exc);
         }
     }
