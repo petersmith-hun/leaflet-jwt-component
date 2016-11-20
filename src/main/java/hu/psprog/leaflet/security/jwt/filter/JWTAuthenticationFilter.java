@@ -54,7 +54,7 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
         Authentication authentication = new AnonymousAuthenticationToken(ANONYMOUS_USERNAME,
                 ANONYMOUS_PASSWORD,
-                Arrays.asList(ANONYMOUS_ROLE));;
+                Arrays.asList(ANONYMOUS_ROLE));
 
         try {
             String token = jwtComponentImpl.extractToken(request);
