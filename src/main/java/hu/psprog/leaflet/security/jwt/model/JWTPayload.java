@@ -39,16 +39,30 @@ public class JWTPayload implements Serializable {
     @NotNull
     private Role role;
 
+    /**
+     * User's public name.
+     */
+    @NotNull
+    private String name;
+
+    /**
+     * User ID.
+     */
+    @NotNull
+    private Integer id;
+
     public JWTPayload() {
         // Serializable
     }
 
-    public JWTPayload(Date issuedAt, Date expires, String username, Role role) {
+    public JWTPayload(Date issuedAt, Date expires, String username, Role role, String name, Integer id) {
         super();
         this.issuedAt = issuedAt;
         this.expires = expires;
         this.username = username;
         this.role = role;
+        this.name = name;
+        this.id = id;
     }
 
     public Date getIssuedAt() {
@@ -83,6 +97,22 @@ public class JWTPayload implements Serializable {
         this.role = role;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this)
@@ -90,6 +120,8 @@ public class JWTPayload implements Serializable {
                 .append("expires", expires)
                 .append("username", username)
                 .append("role", role)
+                .append("name", name)
+                .append("id", id)
                 .toString();
     }
 
@@ -106,6 +138,8 @@ public class JWTPayload implements Serializable {
                 .append(expires, that.expires)
                 .append(username, that.username)
                 .append(role, that.role)
+                .append(name, that.name)
+                .append(id, that.id)
                 .isEquals();
     }
 
@@ -116,6 +150,8 @@ public class JWTPayload implements Serializable {
                 .append(expires)
                 .append(username)
                 .append(role)
+                .append(name)
+                .append(id)
                 .toHashCode();
     }
 }

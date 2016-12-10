@@ -3,6 +3,7 @@ package hu.psprog.leaflet.security.jwt.impl;
 import hu.psprog.leaflet.security.jwt.JWTComponent;
 import hu.psprog.leaflet.security.jwt.exception.InvalidAuthorizationHeaderException;
 import hu.psprog.leaflet.security.jwt.exception.InvalidJWTTokenException;
+import hu.psprog.leaflet.security.jwt.model.ExtendedUserDetails;
 import hu.psprog.leaflet.security.jwt.model.JWTAuthenticationAnswerModel;
 import hu.psprog.leaflet.security.jwt.model.JWTPayload;
 import hu.psprog.leaflet.security.jwt.model.Role;
@@ -39,6 +40,8 @@ public class JWTComponentImpl implements JWTComponent {
 
     private static final String JWT_USERNAME = "usr";
     private static final String JWT_USER_ROLE = "rol";
+    private static final String JWT_USER_PUBLIC_NAME = "name";
+    private static final String JWT_USER_ID = "uid";
 
     private static final String AUTH_HEADER = "Authorization";
     private static final String AUTH_BEARER = "Bearer ";
@@ -66,6 +69,8 @@ public class JWTComponentImpl implements JWTComponent {
         claims.put(JWT_USER_ROLE, roles);
         claims.put(JWT_EXPIRES, generateExpiration());
         claims.put(JWT_ISSUED_AT, generateIssuedAt());
+        claims.put(JWT_USER_PUBLIC_NAME, ((ExtendedUserDetails) userDetails).getName());
+        claims.put(JWT_USER_ID, ((ExtendedUserDetails) userDetails).getId().intValue());
 
         String token = Jwts.builder()
                 .setClaims(claims)
@@ -92,6 +97,8 @@ public class JWTComponentImpl implements JWTComponent {
             payload.setExpires(claims.getExpiration());
             payload.setIssuedAt(claims.getIssuedAt());
             payload.setRole(Role.valueOf(claims.get(JWT_USER_ROLE, String.class)));
+            payload.setName(claims.get(JWT_USER_PUBLIC_NAME, String.class));
+            payload.setId(claims.get(JWT_USER_ID, Integer.class));
 
             return payload;
 
@@ -121,9 +128,7 @@ public class JWTComponentImpl implements JWTComponent {
             throw new InvalidAuthorizationHeaderException(AUTH_ERROR_SCHEMA);
         }
 
-        String token = authHeader.substring(AUTH_BEARER.length());
-
-        return token;
+        return authHeader.substring(AUTH_BEARER.length());
     }
 
     /**
@@ -134,9 +139,8 @@ public class JWTComponentImpl implements JWTComponent {
     private Long generateIssuedAt() {
 
         Date currentDate = new Date();
-        long timestamp = currentDate.getTime() / 1000;
 
-        return timestamp;
+        return currentDate.getTime() / 1000;
     }
 
     /**
