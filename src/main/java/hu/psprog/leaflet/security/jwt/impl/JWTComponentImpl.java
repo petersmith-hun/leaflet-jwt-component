@@ -46,11 +46,14 @@ public class JWTComponentImpl implements JWTComponent {
     private static final String AUTH_HEADER = "Authorization";
     private static final String AUTH_BEARER = "Bearer ";
 
-    @Autowired
     private String jwtSecret;
+    private Integer expirationInHours;
 
     @Autowired
-    private Integer expirationInHours;
+    public JWTComponentImpl(String jwtSecret, Integer expirationInHours) {
+        this.jwtSecret = jwtSecret;
+        this.expirationInHours = expirationInHours;
+    }
 
     /**
      * Generates token from {@link UserDetails} object.
@@ -58,6 +61,7 @@ public class JWTComponentImpl implements JWTComponent {
      * @param userDetails {@link UserDetails} object to generate token based on
      * @return token wrapped in {@link JWTAuthenticationAnswerModel} object
      */
+    @Override
     public JWTAuthenticationAnswerModel generateToken(UserDetails userDetails) {
 
         String roles = userDetails.getAuthorities().stream()
@@ -87,6 +91,7 @@ public class JWTComponentImpl implements JWTComponent {
      * @return {@link JWTPayload} object on success with the contents of JWT payload section
      * @throws InvalidJWTTokenException
      */
+    @Override
     public JWTPayload decode(String token) throws InvalidJWTTokenException {
 
         try {
@@ -116,6 +121,7 @@ public class JWTComponentImpl implements JWTComponent {
      * @return on success, extracted token will be returned as string
      * @throws InvalidAuthorizationHeaderException
      */
+    @Override
     public String extractToken(HttpServletRequest request) throws InvalidAuthorizationHeaderException {
 
         String authHeader = request.getHeader(AUTH_HEADER);

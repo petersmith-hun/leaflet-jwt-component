@@ -21,7 +21,7 @@ public interface JWTComponent {
      * @param userDetails {@link UserDetails} object to generate token based on
      * @return token wrapped in {@link JWTAuthenticationAnswerModel} object
      */
-    public JWTAuthenticationAnswerModel generateToken(UserDetails userDetails);
+    JWTAuthenticationAnswerModel generateToken(UserDetails userDetails);
 
     /**
      * Decodes given JWT token and returns its payload's content as {@link JWTPayload} object.
@@ -30,7 +30,7 @@ public interface JWTComponent {
      * @return {@link JWTPayload} object on success with the contents of JWT payload section
      * @throws InvalidJWTTokenException
      */
-    public JWTPayload decode(String token) throws InvalidJWTTokenException;
+    JWTPayload decode(String token) throws InvalidJWTTokenException;
 
     /**
      * Extracts token from servlet request. Requires Bearer type Authorization header.
@@ -40,6 +40,5 @@ public interface JWTComponent {
      * @return on success, extracted token will be returned as string
      * @throws InvalidAuthorizationHeaderException
      */
-    public String extractToken(HttpServletRequest request) throws InvalidAuthorizationHeaderException;
-
+    String extractToken(HttpServletRequest request) throws InvalidAuthorizationHeaderException;
 }
