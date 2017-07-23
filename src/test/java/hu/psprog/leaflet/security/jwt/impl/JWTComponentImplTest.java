@@ -7,8 +7,6 @@ import hu.psprog.leaflet.security.jwt.exception.InvalidAuthorizationHeaderExcept
 import hu.psprog.leaflet.security.jwt.exception.InvalidJWTTokenException;
 import hu.psprog.leaflet.security.jwt.model.ExtendedUserDetails;
 import hu.psprog.leaflet.security.jwt.model.JWTAuthenticationAnswerModel;
-import hu.psprog.leaflet.security.jwt.model.JWTPayload;
-import hu.psprog.leaflet.security.jwt.model.Role;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,30 +74,6 @@ public class JWTComponentImplTest {
         Map<String, String> jwtPayload = extractJWTPayload(result.getToken());
         assertExpiration(jwtPayload);
         assertUserInfo(jwtPayload);
-    }
-
-    @Test
-    public void shouldDecodeToken() {
-
-        // given
-        String token =  "eyJhbGciOiJIUzUxMiJ9.eyJ1aWQiOjEyMywid" +
-                        "XNyIjoidXNlcm5hbWUiLCJuYW1lIjoiVXNlciB" +
-                        "OYW1lIiwiZXhwIjoxNTAwNzUwNTA2LCJpYXQiO" +
-                        "jE1MDA3MzYxMDYsInJvbCI6IlVTRVIifQ.OdxZ" +
-                        "NNvX24LU1QOJlmhLLsWyI6BjTsVGDZP4yxGsOC" +
-                        "jepx44yaewOV7JPXJajx67KEWHXIeGxvl-FgRsZBQbRw";
-
-        // when
-        JWTPayload result = jwtComponent.decode(token);
-
-        // then
-        assertThat(result, notNullValue());
-        assertThat(result.getUsername(), equalTo(USERNAME));
-        assertThat(result.getRole(), equalTo(Role.USER));
-        assertThat(result.getName(), equalTo(NAME));
-        assertThat(result.getId(), equalTo((int) USER_ID));
-        assertThat(result.getExpires().getTime(), equalTo(1500750506000L));
-        assertThat(result.getIssuedAt().getTime(), equalTo(1500736106000L));
     }
 
     @Test(expected = InvalidJWTTokenException.class)
