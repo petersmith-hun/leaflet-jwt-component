@@ -16,12 +16,21 @@ import javax.servlet.http.HttpServletRequest;
 public interface JWTComponent {
 
     /**
-     * Generates token from {@link UserDetails} object.
+     * Generates token from {@link UserDetails} object with default expiration length.
      *
      * @param userDetails {@link UserDetails} object to generate token based on
      * @return token wrapped in {@link JWTAuthenticationAnswerModel} object
      */
     JWTAuthenticationAnswerModel generateToken(UserDetails userDetails);
+
+    /**
+     * Generates token from {@link UserDetails} object with custom expiration length.
+     *
+     * @param userDetails {@link UserDetails} object to generate token based on
+     * @param expiration expiration length in hours
+     * @return token wrapped in {@link JWTAuthenticationAnswerModel} object
+     */
+    JWTAuthenticationAnswerModel generateToken(UserDetails userDetails, Integer expiration);
 
     /**
      * Decodes given JWT token and returns its payload's content as {@link JWTPayload} object.
