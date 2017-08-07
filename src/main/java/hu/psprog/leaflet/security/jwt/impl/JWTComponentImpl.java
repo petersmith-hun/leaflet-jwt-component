@@ -56,14 +56,25 @@ public class JWTComponentImpl implements JWTComponent {
     }
 
     /**
-     * Generates token from {@link UserDetails} object.
+     * Generates token from {@link UserDetails} object with default expiration length.
      *
      * @param userDetails {@link UserDetails} object to generate token based on
      * @return token wrapped in {@link JWTAuthenticationAnswerModel} object
      */
     @Override
     public JWTAuthenticationAnswerModel generateToken(UserDetails userDetails) {
+        return generateToken(userDetails, expirationInHours);
+    }
 
+    /**
+     * Generates token from {@link UserDetails} object with custom expiration length.
+     *
+     * @param userDetails {@link UserDetails} object to generate token based on
+     * @param expiration expiration length in hours
+     * @return token wrapped in {@link JWTAuthenticationAnswerModel} object
+     */
+    @Override
+    public JWTAuthenticationAnswerModel generateToken(UserDetails userDetails, Integer expiration) {
         String roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
@@ -71,7 +82,7 @@ public class JWTComponentImpl implements JWTComponent {
         Map<String, Object> claims = new HashMap<>();
         claims.put(JWT_USERNAME, userDetails.getUsername());
         claims.put(JWT_USER_ROLE, roles);
-        claims.put(JWT_EXPIRES, generateExpiration());
+        claims.put(JWT_EXPIRES, generateExpiration(expiration));
         claims.put(JWT_ISSUED_AT, generateIssuedAt());
         claims.put(JWT_USER_PUBLIC_NAME, ((ExtendedUserDetails) userDetails).getName());
         claims.put(JWT_USER_ID, ((ExtendedUserDetails) userDetails).getId().intValue());
@@ -152,12 +163,13 @@ public class JWTComponentImpl implements JWTComponent {
     /**
      * Generates Expires ("exp") value.
      *
+     * @param expiration expiration in hours
      * @return {@link Long} timestamp of expiration date in seconds
      */
-    private Long generateExpiration() {
+    private Long generateExpiration(Integer expiration) {
 
         long timestamp = generateIssuedAt();
-        timestamp += (3600 * expirationInHours);
+        timestamp += (3600 * expiration);
 
         return timestamp;
     }

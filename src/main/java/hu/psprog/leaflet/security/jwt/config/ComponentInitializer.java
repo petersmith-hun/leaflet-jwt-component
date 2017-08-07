@@ -41,7 +41,6 @@ public class ComponentInitializer implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(jwtSecret, "JWT Secret must be set!");
         Assert.notNull(expirationInHours, "JWT Expiration must be set!");
-        LOGGER.info(String.format("Current JWT Secret value is [%s].", jwtSecret));
         LOGGER.info(String.format("JWT tokens will expire in %d hours", expirationInHours));
     }
 }

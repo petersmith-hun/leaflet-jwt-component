@@ -72,7 +72,28 @@ public class JWTComponentImplTest {
         
         // then
         Map<String, String> jwtPayload = extractJWTPayload(result.getToken());
-        assertExpiration(jwtPayload);
+        assertExpiration(jwtPayload, EXPIRATION_IN_HOURS);
+        assertUserInfo(jwtPayload);
+    }
+
+    @Test
+    public void shouldGenerateTokenWithCustomExpiration() throws IOException {
+
+        // given
+        long expiration = 1L;
+        ExtendedUserDetails userDetails = new ExtendedUserDetails.Builder()
+                .withUsername(USERNAME)
+                .withAuthorities(AUTHORITY_LIST)
+                .withName(NAME)
+                .withID(USER_ID)
+                .build();
+
+        // when
+        JWTAuthenticationAnswerModel result = jwtComponent.generateToken(userDetails, (int) expiration);
+
+        // then
+        Map<String, String> jwtPayload = extractJWTPayload(result.getToken());
+        assertExpiration(jwtPayload, expiration);
         assertUserInfo(jwtPayload);
     }
 
@@ -144,8 +165,8 @@ public class JWTComponentImplTest {
         assertThat(jwtPayload.get("uid"), equalTo(String.valueOf(USER_ID)));
     }
 
-    private void assertExpiration(Map<String, String> jwtPayload) {
+    private void assertExpiration(Map<String, String> jwtPayload, long expiration) {
         long difference = Long.parseLong(jwtPayload.get("exp")) - Long.parseLong(jwtPayload.get("iat"));
-        assertThat(TimeUnit.SECONDS.toHours(difference), equalTo(EXPIRATION_IN_HOURS));
+        assertThat(TimeUnit.SECONDS.toHours(difference), equalTo(expiration));
     }
 }
