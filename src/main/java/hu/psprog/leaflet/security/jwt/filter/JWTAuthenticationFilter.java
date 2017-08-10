@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -39,6 +40,7 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
     private static final String ANONYMOUS_PRINCIPAL = "ANONYMOUS";
     private static final List<GrantedAuthority> ANONYMOUS_ROLE = AuthorityUtils.createAuthorityList(Role.ANONYMOUS.name());
+    private static final GrantedAuthority RECLAIM_AUTHORITY = new SimpleGrantedAuthority(Role.RECLAIM.name());
     private static final String URL_ROOT = "/**";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JWTAuthenticationFilter.class);
@@ -80,7 +82,7 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
                                             Authentication authResult) throws IOException, ServletException {
 
         SecurityContextHolder.getContext().setAuthentication(authResult);
-        if (authResult instanceof JWTAuthenticationToken) {
+        if (shouldSetAuthenticationTokenHeader(authResult)) {
             response.setHeader(AUTH_TOKEN_HEADER, authResult.getCredentials().toString());
         }
 
@@ -91,6 +93,11 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
     @Override
     public void setAuthenticationManager(AuthenticationManager authenticationManager) {
         super.setAuthenticationManager(authenticationManager);
+    }
+
+    private boolean shouldSetAuthenticationTokenHeader(Authentication authentication) {
+        return authentication instanceof JWTAuthenticationToken
+                && !authentication.getAuthorities().contains(RECLAIM_AUTHORITY);
     }
 
     private UUID extractDeviceID(HttpServletRequest request) {
