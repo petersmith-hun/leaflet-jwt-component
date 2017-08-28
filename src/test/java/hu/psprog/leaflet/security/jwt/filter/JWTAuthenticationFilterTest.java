@@ -12,14 +12,17 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.UUID;
 
+import static hu.psprog.leaflet.security.jwt.filter.JWTAuthenticationFilter.AUTH_TOKEN_HEADER;
 import static hu.psprog.leaflet.security.jwt.filter.JWTAuthenticationFilter.DEVICE_ID_HEADER;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -27,6 +30,8 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Unit tests for {@link JWTAuthenticationFilter}.
@@ -50,6 +55,9 @@ public class JWTAuthenticationFilterTest {
 
     @Mock
     private HttpServletResponse httpServletResponse;
+
+    @Mock
+    private FilterChain filterChain;
 
     @InjectMocks
     private JWTAuthenticationFilter jwtAuthenticationFilter;
@@ -108,6 +116,55 @@ public class JWTAuthenticationFilterTest {
 
         // then
         assertAnonymousUser(result);
+    }
+
+    @Test
+    public void shouldAddTokenToResponseHeader() throws IOException, ServletException {
+
+        // given
+        JWTPayload jwtPayload = new JWTPayload();
+        jwtPayload.setRole(Role.USER);
+        Authentication authentication = JWTAuthenticationToken.getBuilder()
+                .withPayload(jwtPayload)
+                .withRawToken(TOKEN)
+                .build();
+
+        // when
+        jwtAuthenticationFilter.successfulAuthentication(httpServletRequest, httpServletResponse, filterChain, authentication);
+
+        // then
+        verify(httpServletResponse).setHeader(AUTH_TOKEN_HEADER, TOKEN);
+    }
+
+    @Test
+    public void shouldNotAddTokenToResponseHeaderForReclaimUser() throws IOException, ServletException {
+
+        // given
+        JWTPayload jwtPayload = new JWTPayload();
+        jwtPayload.setRole(Role.RECLAIM);
+        Authentication authentication = JWTAuthenticationToken.getBuilder()
+                .withPayload(jwtPayload)
+                .withRawToken(TOKEN)
+                .build();
+
+        // when
+        jwtAuthenticationFilter.successfulAuthentication(httpServletRequest, httpServletResponse, filterChain, authentication);
+
+        // then
+        verifyZeroInteractions(httpServletResponse);
+    }
+
+    @Test
+    public void shouldNotAddTokenToResponseHeaderForAnonymousUser() throws IOException, ServletException {
+
+        // given
+        Authentication authentication = new AnonymousAuthenticationToken(ANONYMOUS, ANONYMOUS, AuthorityUtils.createAuthorityList(ANONYMOUS));
+
+        // when
+        jwtAuthenticationFilter.successfulAuthentication(httpServletRequest, httpServletResponse, filterChain, authentication);
+
+        // then
+        verifyZeroInteractions(httpServletResponse);
     }
 
     private void assertAnonymousUser(Authentication result) {

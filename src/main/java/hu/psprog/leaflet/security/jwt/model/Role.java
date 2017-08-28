@@ -31,5 +31,10 @@ public enum Role {
     /**
      * Virtual service users can access special endpoints. Ex.: CBFS can communicate with Leaflet through SERVICE token.
      */
-    SERVICE
+    SERVICE,
+
+    /**
+     * Temporary user role for password reset requests.
+     */
+    RECLAIM
 }
