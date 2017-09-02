@@ -1,12 +1,16 @@
 package hu.psprog.leaflet.security.sessionstore.config;
 
+import org.h2.tools.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
  * Session Store data source configuration.
@@ -30,6 +34,16 @@ public class SessionStoreDataSourceConfiguration {
     @Bean
     public NamedParameterJdbcTemplate sessionStoreJDBCTemplate() {
         return new NamedParameterJdbcTemplate(sessionStoreDataSource());
+    }
+
+
+    @Bean
+    @DependsOn("sessionStoreJDBCTemplate")
+    @Profile({"development", "nossl"})
+    public Server h2Server() throws SQLException {
+        return Server
+                .createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "9955")
+                .start();
     }
 
     private DataSource sessionStoreDataSource() {
