@@ -1,5 +1,7 @@
 package hu.psprog.leaflet.security.jwt.model;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -64,6 +66,36 @@ public class ExtendedUserDetails implements UserDetails {
 
     public Long getId() {
         return id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ExtendedUserDetails that = (ExtendedUserDetails) o;
+
+        return new EqualsBuilder()
+                .append(enabled, that.enabled)
+                .append(username, that.username)
+                .append(password, that.password)
+                .append(name, that.name)
+                .append(id, that.id)
+                .append(authorities, that.authorities)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(username)
+                .append(password)
+                .append(name)
+                .append(id)
+                .append(enabled)
+                .append(authorities)
+                .toHashCode();
     }
 
     public static class Builder {
