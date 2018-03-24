@@ -6,6 +6,8 @@ import hu.psprog.leaflet.security.jwt.JWTComponent;
 import hu.psprog.leaflet.security.jwt.exception.InvalidJWTTokenException;
 import hu.psprog.leaflet.security.jwt.model.ExtendedUserDetails;
 import hu.psprog.leaflet.security.jwt.model.JWTAuthenticationAnswerModel;
+import hu.psprog.leaflet.security.jwt.model.JWTPayload;
+import hu.psprog.leaflet.security.jwt.model.Role;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +41,12 @@ public class JWTComponentImplTest {
     private static final List<GrantedAuthority> AUTHORITY_LIST = AuthorityUtils.createAuthorityList("USER");
     private static final String NAME = "User Name";
     private static final long USER_ID = 123L;
+    private static final ExtendedUserDetails EXTENDED_USER_DETAILS = ExtendedUserDetails.getBuilder()
+            .withUsername(USERNAME)
+            .withAuthorities(AUTHORITY_LIST)
+            .withName(NAME)
+            .withID(USER_ID)
+            .build();
 
     private static final long EXPIRATION_IN_HOURS = 4L;
     private static final String JWT_SECRET = "czNjcjN0";
@@ -58,16 +66,8 @@ public class JWTComponentImplTest {
     @Test
     public void shouldGenerateToken() throws IOException {
         
-        // given
-        ExtendedUserDetails userDetails = ExtendedUserDetails.getBuilder()
-                .withUsername(USERNAME)
-                .withAuthorities(AUTHORITY_LIST)
-                .withName(NAME)
-                .withID(USER_ID)
-                .build();
-        
         // when
-        JWTAuthenticationAnswerModel result = jwtComponent.generateToken(userDetails);
+        JWTAuthenticationAnswerModel result = jwtComponent.generateToken(EXTENDED_USER_DETAILS);
         
         // then
         Map<String, String> jwtPayload = extractJWTPayload(result.getToken());
@@ -76,19 +76,27 @@ public class JWTComponentImplTest {
     }
 
     @Test
+    public void shouldDecodeValidToken() {
+
+        // given
+        JWTAuthenticationAnswerModel generatedToken = jwtComponent.generateToken(EXTENDED_USER_DETAILS);
+
+        // when
+        JWTPayload result = jwtComponent.decode(generatedToken.getToken());
+
+        // then
+        assertExpiration(result, EXPIRATION_IN_HOURS);
+        assertUserInfo(result);
+    }
+
+    @Test
     public void shouldGenerateTokenWithCustomExpiration() throws IOException {
 
         // given
         long expiration = 1L;
-        ExtendedUserDetails userDetails = ExtendedUserDetails.getBuilder()
-                .withUsername(USERNAME)
-                .withAuthorities(AUTHORITY_LIST)
-                .withName(NAME)
-                .withID(USER_ID)
-                .build();
 
         // when
-        JWTAuthenticationAnswerModel result = jwtComponent.generateToken(userDetails, (int) expiration);
+        JWTAuthenticationAnswerModel result = jwtComponent.generateToken(EXTENDED_USER_DETAILS, (int) expiration);
 
         // then
         Map<String, String> jwtPayload = extractJWTPayload(result.getToken());
@@ -164,8 +172,20 @@ public class JWTComponentImplTest {
         assertThat(jwtPayload.get("uid"), equalTo(String.valueOf(USER_ID)));
     }
 
+    private void assertUserInfo(JWTPayload jwtPayload) {
+        assertThat(jwtPayload.getUsername(), equalTo(USERNAME));
+        assertThat(jwtPayload.getRole(), equalTo(Role.valueOf(AUTHORITY_LIST.get(0).getAuthority())));
+        assertThat(jwtPayload.getName(), equalTo(NAME));
+        assertThat(jwtPayload.getId(), equalTo((int) USER_ID));
+    }
+
     private void assertExpiration(Map<String, String> jwtPayload, long expiration) {
         long difference = Long.parseLong(jwtPayload.get("exp")) - Long.parseLong(jwtPayload.get("iat"));
         assertThat(TimeUnit.SECONDS.toHours(difference), equalTo(expiration));
+    }
+
+    private void assertExpiration(JWTPayload jwtPayload, long expiration) {
+        long difference = jwtPayload.getExpires().getTime() - jwtPayload.getIssuedAt().getTime();
+        assertThat(TimeUnit.MILLISECONDS.toHours(difference), equalTo(expiration));
     }
 }
