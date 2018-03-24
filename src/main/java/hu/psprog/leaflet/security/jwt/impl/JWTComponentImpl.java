@@ -1,7 +1,6 @@
 package hu.psprog.leaflet.security.jwt.impl;
 
 import hu.psprog.leaflet.security.jwt.JWTComponent;
-import hu.psprog.leaflet.security.jwt.exception.InvalidAuthorizationHeaderException;
 import hu.psprog.leaflet.security.jwt.exception.InvalidJWTTokenException;
 import hu.psprog.leaflet.security.jwt.model.ExtendedUserDetails;
 import hu.psprog.leaflet.security.jwt.model.JWTAuthenticationAnswerModel;
@@ -18,9 +17,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -33,9 +34,6 @@ public class JWTComponentImpl implements JWTComponent {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JWTComponentImpl.class);
 
-    private static final String JWT_ISSUED_AT = "iat";
-    private static final String JWT_EXPIRES = "exp";
-    private static final String AUTH_ERROR_SCHEMA = "Authorization schema must be 'Bearer'";
     private static final String TOKEN_CAN_NOT_BE_DECODED = "Token can not be decoded because of the following reason: ";
 
     private static final String JWT_USERNAME = "usr";
@@ -79,20 +77,21 @@ public class JWTComponentImpl implements JWTComponent {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
+        Date issuedAt = new Date();
         Map<String, Object> claims = new HashMap<>();
         claims.put(JWT_USERNAME, userDetails.getUsername());
         claims.put(JWT_USER_ROLE, roles);
-        claims.put(JWT_EXPIRES, generateExpiration(expiration));
-        claims.put(JWT_ISSUED_AT, generateIssuedAt());
         claims.put(JWT_USER_PUBLIC_NAME, ((ExtendedUserDetails) userDetails).getName());
         claims.put(JWT_USER_ID, ((ExtendedUserDetails) userDetails).getId().intValue());
 
-        String token = Jwts.builder()
-                .setClaims(claims)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
-                .compact();
-
-        return new JWTAuthenticationAnswerModel(token);
+        return JWTAuthenticationAnswerModel.getBuilder()
+                .withToken(Jwts.builder()
+                        .setExpiration(generateExpiration(issuedAt, expiration))
+                        .setIssuedAt(issuedAt)
+                        .addClaims(claims)
+                        .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                        .compact())
+                .build();
     }
 
     /**
@@ -100,7 +99,7 @@ public class JWTComponentImpl implements JWTComponent {
      *
      * @param token given (raw) token
      * @return {@link JWTPayload} object on success with the contents of JWT payload section
-     * @throws InvalidJWTTokenException
+     * @throws InvalidJWTTokenException if format of given token is invalid
      */
     @Override
     public JWTPayload decode(String token) throws InvalidJWTTokenException {
@@ -108,15 +107,14 @@ public class JWTComponentImpl implements JWTComponent {
         try {
             Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
 
-            JWTPayload payload = new JWTPayload();
-            payload.setUsername(claims.get(JWT_USERNAME, String.class));
-            payload.setExpires(claims.getExpiration());
-            payload.setIssuedAt(claims.getIssuedAt());
-            payload.setRole(Role.valueOf(claims.get(JWT_USER_ROLE, String.class)));
-            payload.setName(claims.get(JWT_USER_PUBLIC_NAME, String.class));
-            payload.setId(claims.get(JWT_USER_ID, Integer.class));
-
-            return payload;
+            return JWTPayload.getBuilder()
+                    .withUsername(claims.get(JWT_USERNAME, String.class))
+                    .withExpires(claims.getExpiration())
+                    .withIssuedAt(claims.getIssuedAt())
+                    .withRole(Role.valueOf(claims.get(JWT_USER_ROLE, String.class)))
+                    .withName(claims.get(JWT_USER_PUBLIC_NAME, String.class))
+                    .withId(claims.get(JWT_USER_ID, Integer.class))
+                    .build();
 
         } catch(Exception exc) {
             LOGGER.warn(TOKEN_CAN_NOT_BE_DECODED, exc);
@@ -126,51 +124,38 @@ public class JWTComponentImpl implements JWTComponent {
 
     /**
      * Extracts token from servlet request. Requires Bearer type Authorization header.
-     * If Authorization and/or Bearer not found, {@link InvalidAuthorizationHeaderException} will be thrown.
      *
      * @param request standard {@link HttpServletRequest}
      * @return on success, extracted token will be returned as string
-     * @throws InvalidAuthorizationHeaderException
      */
     @Override
-    public String extractToken(HttpServletRequest request) throws InvalidAuthorizationHeaderException {
+    public String extractToken(HttpServletRequest request) {
 
         String authHeader = request.getHeader(AUTH_HEADER);
 
-        if(authHeader == null) {
-            return null;
+        String extractedToken = null;
+        if(Objects.nonNull(authHeader) && authHeader.startsWith(AUTH_BEARER)) {
+            extractedToken = authHeader.substring(AUTH_BEARER.length());
         }
 
-        if (!authHeader.startsWith(AUTH_BEARER)) {
-            throw new InvalidAuthorizationHeaderException(AUTH_ERROR_SCHEMA);
-        }
-
-        return authHeader.substring(AUTH_BEARER.length());
-    }
-
-    /**
-     * Generates Issued At ("iat") value.
-     *
-     * @return {@link Long} timestamp of current date in seconds
-     */
-    private Long generateIssuedAt() {
-
-        Date currentDate = new Date();
-
-        return currentDate.getTime() / 1000;
+        return extractedToken;
     }
 
     /**
      * Generates Expires ("exp") value.
      *
+     * @param issuedAt date when the token was issued
      * @param expiration expiration in hours
      * @return {@link Long} timestamp of expiration date in seconds
      */
-    private Long generateExpiration(Integer expiration) {
+    private Date generateExpiration(Date issuedAt, Integer expiration) {
 
-        long timestamp = generateIssuedAt();
-        timestamp += (3600 * expiration);
+        Calendar calendar = new Calendar.Builder()
+                .setInstant(issuedAt)
+                .build();
 
-        return timestamp;
+        calendar.add(Calendar.HOUR, expiration);
+
+        return calendar.getTime();
     }
 }

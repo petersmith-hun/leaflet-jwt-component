@@ -3,7 +3,6 @@ package hu.psprog.leaflet.security.jwt.impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hu.psprog.leaflet.security.jwt.JWTComponent;
-import hu.psprog.leaflet.security.jwt.exception.InvalidAuthorizationHeaderException;
 import hu.psprog.leaflet.security.jwt.exception.InvalidJWTTokenException;
 import hu.psprog.leaflet.security.jwt.model.ExtendedUserDetails;
 import hu.psprog.leaflet.security.jwt.model.JWTAuthenticationAnswerModel;
@@ -60,7 +59,7 @@ public class JWTComponentImplTest {
     public void shouldGenerateToken() throws IOException {
         
         // given
-        ExtendedUserDetails userDetails = new ExtendedUserDetails.Builder()
+        ExtendedUserDetails userDetails = ExtendedUserDetails.getBuilder()
                 .withUsername(USERNAME)
                 .withAuthorities(AUTHORITY_LIST)
                 .withName(NAME)
@@ -81,7 +80,7 @@ public class JWTComponentImplTest {
 
         // given
         long expiration = 1L;
-        ExtendedUserDetails userDetails = new ExtendedUserDetails.Builder()
+        ExtendedUserDetails userDetails = ExtendedUserDetails.getBuilder()
                 .withUsername(USERNAME)
                 .withAuthorities(AUTHORITY_LIST)
                 .withName(NAME)
@@ -137,17 +136,17 @@ public class JWTComponentImplTest {
         assertThat(result, nullValue());
     }
 
-    @Test(expected = InvalidAuthorizationHeaderException.class)
+    @Test
     public void shouldThrowExceptionOnExtractTokenIfAuthorizationHeaderIsInvalid() {
 
         // given
-        given(httpServletRequest.getHeader(AUTHORIZATION)).willReturn("Something token");
+        given(httpServletRequest.getHeader(AUTHORIZATION)).willReturn("Basic auth");
 
         // when
         String result = jwtComponent.extractToken(httpServletRequest);
 
         // then
-        // expected exception
+        assertThat(result, nullValue());
     }
 
     private Map<String, String> extractJWTPayload(String token) throws IOException {

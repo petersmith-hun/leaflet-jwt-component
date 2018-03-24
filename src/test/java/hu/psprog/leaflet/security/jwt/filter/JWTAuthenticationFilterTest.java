@@ -71,9 +71,10 @@ public class JWTAuthenticationFilterTest {
     public void shouldAttemptAuthentication() throws IOException, ServletException {
 
         // given
-        JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setUsername(USERNAME);
-        jwtPayload.setRole(Role.USER);
+        JWTPayload jwtPayload = JWTPayload.getBuilder()
+                .withUsername(USERNAME)
+                .withRole(Role.USER)
+                .build();
         given(jwtComponent.extractToken(httpServletRequest)).willReturn(TOKEN);
         given(jwtComponent.decode(TOKEN)).willReturn(jwtPayload);
         given(httpServletRequest.getHeader(DEVICE_ID_HEADER)).willReturn(DEVICE_ID.toString());
@@ -122,8 +123,9 @@ public class JWTAuthenticationFilterTest {
     public void shouldAddTokenToResponseHeader() throws IOException, ServletException {
 
         // given
-        JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setRole(Role.USER);
+        JWTPayload jwtPayload = JWTPayload.getBuilder()
+                .withRole(Role.USER)
+                .build();
         Authentication authentication = JWTAuthenticationToken.getBuilder()
                 .withPayload(jwtPayload)
                 .withRawToken(TOKEN)
@@ -140,8 +142,9 @@ public class JWTAuthenticationFilterTest {
     public void shouldNotAddTokenToResponseHeaderForReclaimUser() throws IOException, ServletException {
 
         // given
-        JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setRole(Role.RECLAIM);
+        JWTPayload jwtPayload = JWTPayload.getBuilder()
+                .withRole(Role.RECLAIM)
+                .build();
         Authentication authentication = JWTAuthenticationToken.getBuilder()
                 .withPayload(jwtPayload)
                 .withRawToken(TOKEN)
