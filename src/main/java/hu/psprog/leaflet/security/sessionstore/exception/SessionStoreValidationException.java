@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.AuthenticationException;
 
 /**
- * Exception to throw upon
+ * Exception to throw upon failed token validation.
  *
  * @author Peter Smith
  */
