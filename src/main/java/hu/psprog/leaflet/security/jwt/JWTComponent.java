@@ -1,6 +1,5 @@
 package hu.psprog.leaflet.security.jwt;
 
-import hu.psprog.leaflet.security.jwt.exception.InvalidAuthorizationHeaderException;
 import hu.psprog.leaflet.security.jwt.exception.InvalidJWTTokenException;
 import hu.psprog.leaflet.security.jwt.model.JWTAuthenticationAnswerModel;
 import hu.psprog.leaflet.security.jwt.model.JWTPayload;
@@ -43,11 +42,9 @@ public interface JWTComponent {
 
     /**
      * Extracts token from servlet request. Requires Bearer type Authorization header.
-     * If Authorization and/or Bearer not found, {@link InvalidAuthorizationHeaderException} will be thrown.
      *
      * @param request standard {@link HttpServletRequest}
      * @return on success, extracted token will be returned as string
-     * @throws InvalidAuthorizationHeaderException
      */
-    String extractToken(HttpServletRequest request) throws InvalidAuthorizationHeaderException;
+    String extractToken(HttpServletRequest request);
 }

@@ -35,9 +35,10 @@ public class JWTAuthenticationProviderTest {
 
     @Before
     public void setup() {
-        JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setRole(Role.USER);
-        jwtPayload.setUsername("username");
+        JWTPayload jwtPayload = JWTPayload.getBuilder()
+                .withRole(Role.USER)
+                .withUsername("username")
+                .build();
         jwtAuthenticationToken = JWTAuthenticationToken.getBuilder()
                 .withPayload(jwtPayload)
                 .build();
@@ -63,10 +64,9 @@ public class JWTAuthenticationProviderTest {
         given(sessionStoreService.validateToken(jwtAuthenticationToken)).willReturn(SessionStoreValidationStatus.UNKNOWN_TOKEN);
 
         // when
-        Authentication result = jwtAuthenticationProvider.authenticate(jwtAuthenticationToken);
+        jwtAuthenticationProvider.authenticate(jwtAuthenticationToken);
 
         // then
         // expected exception
-        assertThat(result.isAuthenticated(), is(false));
     }
 }

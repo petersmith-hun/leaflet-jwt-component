@@ -17,8 +17,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class JWTAuthenticationProvider implements AuthenticationProvider {
 
-    @Autowired
     private SessionStoreService sessionStoreService;
+
+    @Autowired
+    public JWTAuthenticationProvider(SessionStoreService sessionStoreService) {
+        this.sessionStoreService = sessionStoreService;
+    }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {

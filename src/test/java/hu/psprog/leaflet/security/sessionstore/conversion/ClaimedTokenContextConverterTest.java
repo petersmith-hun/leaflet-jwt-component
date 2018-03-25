@@ -51,10 +51,11 @@ public class ClaimedTokenContextConverterTest {
                 .withDeviceID(DEVICE_ID)
                 .withRemoteAddress(REMOTE_ADDRESS)
                 .build();
-        JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setUsername(USERNAME);
-        jwtPayload.setIssuedAt(ISSUED);
-        jwtPayload.setExpires(EXPIRES);
+        JWTPayload jwtPayload = JWTPayload.getBuilder()
+                .withUsername(USERNAME)
+                .withIssuedAt(ISSUED)
+                .withExpires(EXPIRES)
+                .build();
         given(jwtComponent.decode(TOKEN)).willReturn(jwtPayload);
 
         // when

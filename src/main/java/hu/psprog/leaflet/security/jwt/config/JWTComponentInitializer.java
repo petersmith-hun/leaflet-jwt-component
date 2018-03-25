@@ -15,9 +15,9 @@ import org.springframework.security.crypto.codec.Base64;
  * @author Peter Smith
  */
 @Configuration
-public class ComponentInitializer implements InitializingBean {
+public class JWTComponentInitializer implements InitializingBean {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ComponentInitializer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JWTComponentInitializer.class);
     private static final String CONFIG_JWT_SECRET = "${jwt.secret}";
     private static final String CONFIG_JWT_EXPIRATION_IN_HOURS = "${jwt.expire.hours}";
 

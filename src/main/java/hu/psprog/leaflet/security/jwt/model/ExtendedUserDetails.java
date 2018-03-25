@@ -98,40 +98,47 @@ public class ExtendedUserDetails implements UserDetails {
                 .toHashCode();
     }
 
-    public static class Builder {
+    public static ExtendedUserDetailsBuilder getBuilder() {
+        return new ExtendedUserDetailsBuilder();
+    }
+
+    /**
+     * Builder for {@link ExtendedUserDetails}.
+     */
+    public static class ExtendedUserDetailsBuilder {
 
         private ExtendedUserDetails extendedUserDetails;
 
-        public Builder() {
+        private ExtendedUserDetailsBuilder() {
             this.extendedUserDetails = new ExtendedUserDetails();
         }
 
-        public Builder withUsername(String username) {
+        public ExtendedUserDetailsBuilder withUsername(String username) {
             extendedUserDetails.username = username;
             return this;
         }
 
-        public Builder withPassword(String password) {
+        public ExtendedUserDetailsBuilder withPassword(String password) {
             extendedUserDetails.password = password;
             return this;
         }
 
-        public Builder withName(String name) {
+        public ExtendedUserDetailsBuilder withName(String name) {
             extendedUserDetails.name = name;
             return this;
         }
 
-        public Builder withID(Long id) {
+        public ExtendedUserDetailsBuilder withID(Long id) {
             extendedUserDetails.id = id;
             return this;
         }
 
-        public Builder withEnabled(boolean enabled) {
+        public ExtendedUserDetailsBuilder withEnabled(boolean enabled) {
             extendedUserDetails.enabled = enabled;
             return this;
         }
 
-        public Builder withAuthorities(Collection<GrantedAuthority> authorities) {
+        public ExtendedUserDetailsBuilder withAuthorities(Collection<GrantedAuthority> authorities) {
             extendedUserDetails.authorities = authorities;
             return this;
         }

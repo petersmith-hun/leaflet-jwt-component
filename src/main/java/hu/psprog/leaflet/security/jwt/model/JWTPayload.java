@@ -1,5 +1,6 @@
 package hu.psprog.leaflet.security.jwt.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -11,9 +12,8 @@ import java.util.Date;
 /**
  * JWT content wrapper.
  */
+@JsonDeserialize(builder = JWTPayload.JWTPayloadBuilder.class)
 public class JWTPayload implements Serializable {
-
-    private static final long serialVersionUID = 1L;
 
     /**
      * Standard Issued at field in payload ("iat").
@@ -51,66 +51,28 @@ public class JWTPayload implements Serializable {
     @NotNull
     private Integer id;
 
-    public JWTPayload() {
-        // Serializable
-    }
-
-    public JWTPayload(Date issuedAt, Date expires, String username, Role role, String name, Integer id) {
-        super();
-        this.issuedAt = issuedAt;
-        this.expires = expires;
-        this.username = username;
-        this.role = role;
-        this.name = name;
-        this.id = id;
-    }
-
     public Date getIssuedAt() {
         return issuedAt;
-    }
-
-    public void setIssuedAt(Date issuedAt) {
-        this.issuedAt = issuedAt;
     }
 
     public Date getExpires() {
         return expires;
     }
 
-    public void setExpires(Date expires) {
-        this.expires = expires;
-    }
-
     public String getUsername() {
         return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public Role getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Integer getId() {
         return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     @Override
@@ -153,5 +115,65 @@ public class JWTPayload implements Serializable {
                 .append(name)
                 .append(id)
                 .toHashCode();
+    }
+
+    public static JWTPayloadBuilder getBuilder() {
+        return new JWTPayloadBuilder();
+    }
+
+    /**
+     * Builder for {@link JWTPayload}.
+     */
+    public static final class JWTPayloadBuilder {
+        private Date issuedAt;
+        private Date expires;
+        private String username;
+        private Role role;
+        private String name;
+        private Integer id;
+
+        private JWTPayloadBuilder() {
+        }
+
+        public JWTPayloadBuilder withIssuedAt(Date issuedAt) {
+            this.issuedAt = issuedAt;
+            return this;
+        }
+
+        public JWTPayloadBuilder withExpires(Date expires) {
+            this.expires = expires;
+            return this;
+        }
+
+        public JWTPayloadBuilder withUsername(String username) {
+            this.username = username;
+            return this;
+        }
+
+        public JWTPayloadBuilder withRole(Role role) {
+            this.role = role;
+            return this;
+        }
+
+        public JWTPayloadBuilder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public JWTPayloadBuilder withId(Integer id) {
+            this.id = id;
+            return this;
+        }
+
+        public JWTPayload build() {
+            JWTPayload jWTPayload = new JWTPayload();
+            jWTPayload.username = this.username;
+            jWTPayload.expires = this.expires;
+            jWTPayload.role = this.role;
+            jWTPayload.issuedAt = this.issuedAt;
+            jWTPayload.name = this.name;
+            jWTPayload.id = this.id;
+            return jWTPayload;
+        }
     }
 }
