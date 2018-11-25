@@ -1,4 +1,4 @@
-module leaflet.jwt.component {
+module leaflet.component.security.jwt {
     requires java.sql;
     requires java.validation;
     requires javax.servlet.api;
