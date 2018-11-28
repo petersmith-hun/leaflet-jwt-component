@@ -15,4 +15,12 @@ module leaflet.component.security.jwt {
     requires spring.security.core;
     requires spring.security.web;
     requires spring.tx;
+
+    exports hu.psprog.leaflet.security.jwt;
+    exports hu.psprog.leaflet.security.jwt.auth;
+    exports hu.psprog.leaflet.security.jwt.exception;
+    exports hu.psprog.leaflet.security.jwt.filter;
+    exports hu.psprog.leaflet.security.jwt.model;
+    exports hu.psprog.leaflet.security.sessionstore.domain;
+    exports hu.psprog.leaflet.security.sessionstore.service;
 }

@@ -27,7 +27,7 @@
         <commons.lang.version>3.8.1</commons.lang.version>
         <logback.version>1.2.3</logback.version>
         <slf4j.version>1.7.25</slf4j.version>
-        <h2.version>1.4.197</h2.version>
+        <h2.version>1.4.196</h2.version>
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
         <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
         <jaxb-runtime.version>2.3.1</jaxb-runtime.version>
