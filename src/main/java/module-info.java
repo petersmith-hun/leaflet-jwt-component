@@ -1,9 +1,8 @@
 module leaflet.component.security.jwt {
+    requires com.fasterxml.jackson.databind;
     requires java.sql;
     requires java.validation;
-    requires javax.servlet.api;
     requires h2;
-    requires jackson.databind;
     requires jjwt;
     requires org.apache.commons.lang3;
     requires slf4j.api;
@@ -15,6 +14,7 @@ module leaflet.component.security.jwt {
     requires spring.security.core;
     requires spring.security.web;
     requires spring.tx;
+    requires tomcat.embed.core;
 
     exports hu.psprog.leaflet.security.jwt;
     exports hu.psprog.leaflet.security.jwt.auth;

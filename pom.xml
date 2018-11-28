@@ -22,7 +22,6 @@
         <spring-boot.version>2.1.0.RELEASE</spring-boot.version>
         <spring.framework.version>5.1.2.RELEASE</spring.framework.version>
         <spring.security.version>5.1.1.RELEASE</spring.security.version>
-        <javax.servlet.api.version>4.0.1</javax.servlet.api.version>
         <hibernate-validator.version>6.0.13.Final</hibernate-validator.version>
         <commons.lang.version>3.8.1</commons.lang.version>
         <logback.version>1.2.3</logback.version>
@@ -31,6 +30,8 @@
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
         <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
         <jaxb-runtime.version>2.3.1</jaxb-runtime.version>
+        <jackson.version>2.9.7</jackson.version>
+        <tomcat-embed-core.version>9.0.12</tomcat-embed-core.version>
 
         <!-- test dependencies -->
         <junit.version>4.12</junit.version>
@@ -45,6 +46,21 @@
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
             <version>${jwt.lib.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.framework.version}</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
@@ -76,12 +92,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>${javax.servlet.api.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
             <version>${jaxb-runtime.version}</version>
@@ -101,6 +111,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${commons.lang.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <version>${tomcat-embed-core.version}</version>
             <scope>provided</scope>
         </dependency>
 
