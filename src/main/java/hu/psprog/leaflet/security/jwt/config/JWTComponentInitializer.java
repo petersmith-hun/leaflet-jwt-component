@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Base64;
@@ -16,6 +17,7 @@ import java.util.Base64;
  * @author Peter Smith
  */
 @Configuration
+@ComponentScan("hu.psprog.leaflet.security.jwt.impl")
 public class JWTComponentInitializer implements InitializingBean {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JWTComponentInitializer.class);

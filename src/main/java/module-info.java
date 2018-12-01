@@ -1,4 +1,4 @@
-module leaflet.component.security.jwt {
+open module leaflet.component.security.jwt {
     requires com.fasterxml.jackson.databind;
     requires java.sql;
     requires java.validation;
