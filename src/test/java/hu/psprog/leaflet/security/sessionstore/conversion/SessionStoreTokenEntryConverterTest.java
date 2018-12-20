@@ -5,7 +5,7 @@ import hu.psprog.leaflet.security.sessionstore.domain.TokenStatus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.Timestamp;
 import java.util.Date;

@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -21,8 +21,8 @@ import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -180,7 +180,6 @@ public class SessionStoreServiceImplTest {
         SessionStoreTokenEntry sessionStoreTokenEntry = prepareSessionStoreTokenEntry(true);
         given(jwtAuthenticationToken.getRawToken()).willReturn(TOKEN);
         given(jwtAuthenticationToken.getDeviceID()).willReturn(UUID.randomUUID());
-        given(jwtAuthenticationToken.getRemoteAddress()).willReturn(REMOTE_ADDRESS);
         given(sessionStoreDAO.getTokenEntry(anyString())).willReturn(Optional.of(sessionStoreTokenEntry));
 
         // when

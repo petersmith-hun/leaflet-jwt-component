@@ -7,11 +7,11 @@
     <packaging>jar</packaging>
     <groupId>hu.psprog.leaflet</groupId>
     <artifactId>leaflet-jwt-component</artifactId>
-    <version>2.3.0</version>
+    <version>2.4.0</version>
 
     <properties>
         <!-- Java environment version -->
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
 
         <!-- compiler settings -->
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -19,23 +19,26 @@
 
         <!-- other dependencies -->
         <jwt.lib.version>0.9.0</jwt.lib.version>
-        <spring-boot.version>1.5.4.RELEASE</spring-boot.version>
-        <spring.framework.version>4.3.9.RELEASE</spring.framework.version>
-        <spring.security.version>4.1.3.RELEASE</spring.security.version>
-        <javax.servlet.api.version>3.1.0</javax.servlet.api.version>
-        <hibernate-validator.version>5.2.4.Final</hibernate-validator.version>
-        <commons.lang.version>3.6</commons.lang.version>
+        <spring-boot.version>2.1.1.RELEASE</spring-boot.version>
+        <spring.framework.version>5.1.3.RELEASE</spring.framework.version>
+        <spring.security.version>5.1.2.RELEASE</spring.security.version>
+        <hibernate-validator.version>6.0.13.Final</hibernate-validator.version>
+        <commons.lang.version>3.8.1</commons.lang.version>
         <logback.version>1.2.3</logback.version>
         <slf4j.version>1.7.25</slf4j.version>
         <h2.version>1.4.196</h2.version>
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+        <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
+        <jaxb-runtime.version>2.3.1</jaxb-runtime.version>
+        <jackson.version>2.9.7</jackson.version>
+        <tomcat-embed-core.version>9.0.12</tomcat-embed-core.version>
 
         <!-- test dependencies -->
         <junit.version>4.12</junit.version>
-        <mockito-all.version>1.10.19</mockito-all.version>
+        <mockito.version>2.23.4</mockito.version>
         <hamcrest-all.version>1.3</hamcrest-all.version>
-        <jacoco-maven-plugin.version>0.7.9</jacoco-maven-plugin.version>
-        <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
+        <jacoco-maven-plugin.version>0.8.2</jacoco-maven-plugin.version>
+        <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
     </properties>
 
     <dependencies>
@@ -43,6 +46,26 @@
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
             <version>${jwt.lib.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.framework.version}</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
@@ -74,10 +97,20 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>${javax.servlet.api.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <version>${spring-boot.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>${jaxb-runtime.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>${jaxb-runtime.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -90,6 +123,18 @@
             <artifactId>commons-lang3</artifactId>
             <version>${commons.lang.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <version>${tomcat-embed-core.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.tomcat</groupId>
+                    <artifactId>tomcat-annotations-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- logging dependencies -->
@@ -121,8 +166,8 @@
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>${mockito-all.version}</version>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -149,6 +194,11 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>${maven-source-plugin.version}</version>
                 <executions>
@@ -166,6 +216,7 @@
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <argLine>${argLine.surefire}</argLine>
+                    <forkCount>0</forkCount>
                 </configuration>
             </plugin>
             <plugin>
