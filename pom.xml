@@ -31,7 +31,7 @@
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <jaxb-runtime.version>2.3.2</jaxb-runtime.version>
         <jackson.version>2.10.2</jackson.version>
-        <tomcat-embed-core.version>9.0.31</tomcat-embed-core.version>
+        <tomcat-embed-core.version>9.0.35</tomcat-embed-core.version>
 
         <!-- test dependencies -->
         <junit.version>4.12</junit.version>
