@@ -22,7 +22,7 @@
         <jwt.lib.version>0.9.1</jwt.lib.version>
         <spring-boot.version>2.3.4.RELEASE</spring-boot.version>
         <spring.framework.version>5.2.9.RELEASE</spring.framework.version>
-        <spring.security.version>5.3.4.RELEASE</spring.security.version>
+        <spring.security.version>5.3.10.RELEASE</spring.security.version>
         <hibernate-validator.version>6.1.5.Final</hibernate-validator.version>
         <commons.lang.version>3.11</commons.lang.version>
         <logback.version>1.2.3</logback.version>
