@@ -5,9 +5,9 @@ import hu.psprog.leaflet.security.sessionstore.conversion.SessionStoreTokenEntry
 import hu.psprog.leaflet.security.sessionstore.conversion.SessionStoreTokenEntryMapper;
 import hu.psprog.leaflet.security.sessionstore.domain.SessionStoreTokenEntry;
 import hu.psprog.leaflet.security.sessionstore.domain.TokenStatus;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.ResourceUtils;
 
 import java.io.File;
@@ -40,7 +40,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Peter Smith
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = SessionStoreDAOImplTest.SessionStoreDAOITConfiguration.class)
 public class SessionStoreDAOImplTest {
 
@@ -57,7 +57,7 @@ public class SessionStoreDAOImplTest {
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         File scriptFile = ResourceUtils.getFile(INTEGRATION_TEST_DATABASE_SCRIPT);
         namedParameterJdbcTemplate.execute(new String(Files.readAllBytes(scriptFile.toPath())), PreparedStatement::execute);

@@ -7,11 +7,12 @@ import hu.psprog.leaflet.security.sessionstore.domain.ClaimedTokenContext;
 import hu.psprog.leaflet.security.sessionstore.domain.SessionStoreTokenEntry;
 import hu.psprog.leaflet.security.sessionstore.domain.SessionStoreValidationStatus;
 import hu.psprog.leaflet.security.sessionstore.domain.TokenStatus;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -26,14 +27,14 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Unit tests for {@link SessionStoreServiceImpl}.
  *
  * @author Peter Smith
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class SessionStoreServiceImplTest {
 
     private static final String TOKEN = "token";
@@ -72,7 +73,7 @@ public class SessionStoreServiceImplTest {
         verify(sessionStoreDAO).insertTokenEntry(sessionStoreTokenEntry);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNPEOnMissingToken() {
 
         // given
@@ -82,14 +83,14 @@ public class SessionStoreServiceImplTest {
                 .build();
 
         // when
-        sessionStoreService.storeToken(claimedTokenContext);
+        Assertions.assertThrows(NullPointerException.class, () -> sessionStoreService.storeToken(claimedTokenContext));
 
         // then
         // expected exception
-        verifyZeroInteractions(sessionStoreDAO);
+        verifyNoInteractions(sessionStoreDAO);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNPEOnMissingDeviceID() {
 
         // given
@@ -99,14 +100,14 @@ public class SessionStoreServiceImplTest {
                 .build();
 
         // when
-        sessionStoreService.storeToken(claimedTokenContext);
+        Assertions.assertThrows(NullPointerException.class, () -> sessionStoreService.storeToken(claimedTokenContext));
 
         // then
         // expected exception
-        verifyZeroInteractions(sessionStoreDAO);
+        verifyNoInteractions(sessionStoreDAO);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNPEOnMissingRemoteAddress() {
 
         // given
@@ -116,11 +117,11 @@ public class SessionStoreServiceImplTest {
                 .build();
 
         // when
-        sessionStoreService.storeToken(claimedTokenContext);
+        Assertions.assertThrows(NullPointerException.class, () -> sessionStoreService.storeToken(claimedTokenContext));
 
         // then
         // expected exception
-        verifyZeroInteractions(sessionStoreDAO);
+        verifyNoInteractions(sessionStoreDAO);
     }
 
     @Test
@@ -269,13 +270,13 @@ public class SessionStoreServiceImplTest {
 
     private SessionStoreTokenEntry prepareSessionStoreTokenEntry(int expirationInMinutes) {
         return SessionStoreTokenEntry.getBuilder()
-                .withToken("token_" + String.valueOf(expirationInMinutes))
+                .withToken("token_" + expirationInMinutes)
                 .withExpires(new Timestamp(getTimeWithOffsetInMinutes(expirationInMinutes)))
                 .build();
     }
 
     private long getTimeWithOffsetInMinutes(int expirationInMinutes) {
-        return System.currentTimeMillis() + expirationInMinutes * 60000;
+        return System.currentTimeMillis() + expirationInMinutes * 60000L;
     }
 
     private SessionStoreTokenEntry prepareSessionStoreTokenEntry(boolean isActive) {

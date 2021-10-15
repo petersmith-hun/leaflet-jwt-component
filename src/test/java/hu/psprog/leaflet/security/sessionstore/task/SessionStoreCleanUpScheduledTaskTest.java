@@ -1,21 +1,21 @@
 package hu.psprog.leaflet.security.sessionstore.task;
 
 import hu.psprog.leaflet.security.sessionstore.service.SessionStoreService;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Unit tests for {@link SessionStoreCleanUpScheduledTask}.
  *
  * @author Peter Smith
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class SessionStoreCleanUpScheduledTaskTest {
 
     private static final int THRESHOLD = 1;
@@ -50,6 +50,6 @@ public class SessionStoreCleanUpScheduledTaskTest {
         sessionStoreCleanUpScheduledTask.scheduledCleanup();
 
         // then
-        verifyZeroInteractions(sessionStoreService);
+        verifyNoInteractions(sessionStoreService);
     }
 }

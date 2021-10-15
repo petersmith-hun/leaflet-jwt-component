@@ -5,12 +5,13 @@ import hu.psprog.leaflet.security.jwt.model.Role;
 import hu.psprog.leaflet.security.sessionstore.domain.SessionStoreValidationStatus;
 import hu.psprog.leaflet.security.sessionstore.exception.SessionStoreValidationException;
 import hu.psprog.leaflet.security.sessionstore.service.SessionStoreService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -22,7 +23,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Peter Smith
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class JWTAuthenticationProviderTest {
 
     @Mock
@@ -33,7 +34,7 @@ public class JWTAuthenticationProviderTest {
 
     private JWTAuthenticationToken jwtAuthenticationToken;
 
-    @Before
+    @BeforeEach
     public void setup() {
         JWTPayload jwtPayload = JWTPayload.getBuilder()
                 .withRole(Role.USER)
@@ -57,14 +58,14 @@ public class JWTAuthenticationProviderTest {
         assertThat(result.isAuthenticated(), is(true));
     }
 
-    @Test(expected = SessionStoreValidationException.class)
+    @Test
     public void shouldAuthenticateWithFailure() {
 
         // given
         given(sessionStoreService.validateToken(jwtAuthenticationToken)).willReturn(SessionStoreValidationStatus.UNKNOWN_TOKEN);
 
         // when
-        jwtAuthenticationProvider.authenticate(jwtAuthenticationToken);
+        Assertions.assertThrows(SessionStoreValidationException.class, () -> jwtAuthenticationProvider.authenticate(jwtAuthenticationToken));
 
         // then
         // expected exception
