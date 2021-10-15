@@ -8,11 +8,12 @@ import hu.psprog.leaflet.security.jwt.model.ExtendedUserDetails;
 import hu.psprog.leaflet.security.jwt.model.JWTAuthenticationAnswerModel;
 import hu.psprog.leaflet.security.jwt.model.JWTPayload;
 import hu.psprog.leaflet.security.jwt.model.Role;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 
@@ -34,7 +35,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Peter Smith
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class JWTComponentImplTest {
 
     private static final String USERNAME = "username";
@@ -53,12 +54,12 @@ public class JWTComponentImplTest {
     private static final String AUTHORIZATION = "Authorization";
 
     private JWTComponent jwtComponent;
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Mock
     private HttpServletRequest httpServletRequest;
 
-    @Before
+    @BeforeEach
     public void setup() {
         jwtComponent = new JWTComponentImpl(JWT_SECRET, (int) EXPIRATION_IN_HOURS);
     }
@@ -85,7 +86,7 @@ public class JWTComponentImplTest {
         JWTPayload result = jwtComponent.decode(generatedToken.getToken());
 
         // then
-        assertExpiration(result, EXPIRATION_IN_HOURS);
+        assertExpiration(result);
         assertUserInfo(result);
     }
 
@@ -104,14 +105,14 @@ public class JWTComponentImplTest {
         assertUserInfo(jwtPayload);
     }
 
-    @Test(expected = InvalidJWTTokenException.class)
+    @Test
     public void shouldThrowInvalidJWTTokenExceptionOnInvalidToken() {
 
         // given
         String token = "invalid-token";
 
         // when
-        jwtComponent.decode(token);
+        Assertions.assertThrows(InvalidJWTTokenException.class, () -> jwtComponent.decode(token));
 
         // then
         // expected exception
@@ -184,8 +185,8 @@ public class JWTComponentImplTest {
         assertThat(TimeUnit.SECONDS.toHours(difference), equalTo(expiration));
     }
 
-    private void assertExpiration(JWTPayload jwtPayload, long expiration) {
+    private void assertExpiration(JWTPayload jwtPayload) {
         long difference = jwtPayload.getExpires().getTime() - jwtPayload.getIssuedAt().getTime();
-        assertThat(TimeUnit.MILLISECONDS.toHours(difference), equalTo(expiration));
+        assertThat(TimeUnit.MILLISECONDS.toHours(difference), equalTo(JWTComponentImplTest.EXPIRATION_IN_HOURS));
     }
 }

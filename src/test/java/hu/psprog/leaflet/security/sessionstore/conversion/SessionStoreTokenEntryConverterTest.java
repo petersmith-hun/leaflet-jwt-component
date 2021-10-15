@@ -2,10 +2,10 @@ package hu.psprog.leaflet.security.sessionstore.conversion;
 
 import hu.psprog.leaflet.security.sessionstore.domain.SessionStoreTokenEntry;
 import hu.psprog.leaflet.security.sessionstore.domain.TokenStatus;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -28,7 +28,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  *
  * @author Peter Smith
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class SessionStoreTokenEntryConverterTest {
 
     private static final String TOKEN = "token";

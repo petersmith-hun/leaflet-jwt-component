@@ -5,11 +5,11 @@ import hu.psprog.leaflet.security.jwt.model.JWTPayload;
 import hu.psprog.leaflet.security.sessionstore.domain.ClaimedTokenContext;
 import hu.psprog.leaflet.security.sessionstore.domain.SessionStoreTokenEntry;
 import hu.psprog.leaflet.security.sessionstore.domain.TokenStatus;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -25,7 +25,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Peter Smith
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ClaimedTokenContextConverterTest {
 
     private static final String TOKEN = "token";

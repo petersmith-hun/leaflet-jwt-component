@@ -4,12 +4,12 @@ import hu.psprog.leaflet.security.jwt.JWTComponent;
 import hu.psprog.leaflet.security.jwt.auth.JWTAuthenticationToken;
 import hu.psprog.leaflet.security.jwt.model.JWTPayload;
 import hu.psprog.leaflet.security.jwt.model.Role;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -31,14 +31,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Unit tests for {@link JWTAuthenticationFilter}.
  *
  * @author Peter Smith
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class JWTAuthenticationFilterTest {
 
     private static final String TOKEN = "token";
@@ -62,7 +62,7 @@ public class JWTAuthenticationFilterTest {
     @InjectMocks
     private JWTAuthenticationFilter jwtAuthenticationFilter;
 
-    @Before
+    @BeforeEach
     public void setup() {
         jwtAuthenticationFilter.setAuthenticationManager(authentication -> authentication);
     }
@@ -154,7 +154,7 @@ public class JWTAuthenticationFilterTest {
         jwtAuthenticationFilter.successfulAuthentication(httpServletRequest, httpServletResponse, filterChain, authentication);
 
         // then
-        verifyZeroInteractions(httpServletResponse);
+        verifyNoInteractions(httpServletResponse);
     }
 
     @Test
@@ -167,7 +167,7 @@ public class JWTAuthenticationFilterTest {
         jwtAuthenticationFilter.successfulAuthentication(httpServletRequest, httpServletResponse, filterChain, authentication);
 
         // then
-        verifyZeroInteractions(httpServletResponse);
+        verifyNoInteractions(httpServletResponse);
     }
 
     private void assertAnonymousUser(Authentication result) {
